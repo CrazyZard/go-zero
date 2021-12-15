@@ -38,6 +38,7 @@ type (
 		Hvals(key string) ([]string, error)
 		Incr(key string) (int64, error)
 		Incrby(key string, increment int64) (int64, error)
+		Lindex(key string, index int64) (string, error)
 		Llen(key string) (int, error)
 		Lindex(key string, index int64) (string, error)
 		Lpop(key string) (string, error)
