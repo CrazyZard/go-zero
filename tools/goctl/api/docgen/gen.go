@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/tools/goctl/api/parser"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
 	"github.com/urfave/cli"
+	"github.com/zeromicro/go-zero/tools/goctl/api/parser"
+	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
 )
 
-// DocCommand generate markdown doc file
+// DocCommand generate Markdown doc file
 func DocCommand(c *cli.Context) error {
 	dir := c.String("dir")
 	if len(dir) == 0 {
@@ -28,7 +28,7 @@ func DocCommand(c *cli.Context) error {
 		}
 	}
 
-	if !util.FileExists(dir) {
+	if !pathx.FileExists(dir) {
 		return fmt.Errorf("dir %s not exsit", dir)
 	}
 
@@ -45,7 +45,7 @@ func DocCommand(c *cli.Context) error {
 	for _, p := range files {
 		api, err := parser.Parse(p)
 		if err != nil {
-			return fmt.Errorf("parse file: %s, err: %s", p, err.Error())
+			return fmt.Errorf("parse file: %s, err: %w", p, err)
 		}
 
 		api.Service = api.Service.JoinPrefix()

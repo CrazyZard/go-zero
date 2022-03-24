@@ -4,13 +4,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/zeromicro/go-zero/tools/goctl/util"
+	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
+	"github.com/zeromicro/go-zero/tools/goctl/util/stringx"
 )
 
 const rpcTemplateText = `syntax = "proto3";
 
 package {{.package}};
+option go_package="./{{.package}}";
 
 message Request {
   string ping = 1;
@@ -29,13 +31,13 @@ service {{.serviceName}} {
 func ProtoTmpl(out string) error {
 	protoFilename := filepath.Base(out)
 	serviceName := stringx.From(strings.TrimSuffix(protoFilename, filepath.Ext(protoFilename)))
-	text, err := util.LoadTemplate(category, rpcTemplateFile, rpcTemplateText)
+	text, err := pathx.LoadTemplate(category, rpcTemplateFile, rpcTemplateText)
 	if err != nil {
 		return err
 	}
 
 	dir := filepath.Dir(out)
-	err = util.MkdirIfNotExist(dir)
+	err = pathx.MkdirIfNotExist(dir)
 	if err != nil {
 		return err
 	}

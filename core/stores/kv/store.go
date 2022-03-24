@@ -4,10 +4,10 @@ import (
 	"errors"
 	"log"
 
-	"github.com/tal-tech/go-zero/core/errorx"
-	"github.com/tal-tech/go-zero/core/hash"
-	"github.com/tal-tech/go-zero/core/stores/cache"
-	"github.com/tal-tech/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/core/errorx"
+	"github.com/zeromicro/go-zero/core/hash"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
 // ErrNoRedisNode is an error that indicates no redis node.
@@ -24,6 +24,7 @@ type (
 		Expire(key string, seconds int) error
 		Expireat(key string, expireTime int64) error
 		Get(key string) (string, error)
+		GetSet(key, value string) (string, error)
 		Hdel(key, field string) (bool, error)
 		Hexists(key, field string) (bool, error)
 		Hget(key, field string) (string, error)
@@ -458,6 +459,15 @@ func (cs clusterStore) SetnxEx(key, value string, seconds int) (bool, error) {
 	}
 
 	return node.SetnxEx(key, value, seconds)
+}
+
+func (cs clusterStore) GetSet(key, value string) (string, error) {
+	node, err := cs.getRedis(key)
+	if err != nil {
+		return "", err
+	}
+
+	return node.GetSet(key, value)
 }
 
 func (cs clusterStore) Sismember(key string, value interface{}) (bool, error) {

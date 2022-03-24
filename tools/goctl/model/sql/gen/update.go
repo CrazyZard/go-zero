@@ -3,10 +3,11 @@ package gen
 import (
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/collection"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/template"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/zeromicro/go-zero/core/collection"
+	"github.com/zeromicro/go-zero/tools/goctl/model/sql/template"
+	"github.com/zeromicro/go-zero/tools/goctl/util"
+	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
+	"github.com/zeromicro/go-zero/tools/goctl/util/stringx"
 )
 
 func genUpdate(table Table, withCache, postgreSql bool) (string, string, error) {
@@ -39,7 +40,7 @@ func genUpdate(table Table, withCache, postgreSql bool) (string, string, error) 
 		expressionValues = append(expressionValues, "data."+table.PrimaryKey.Name.ToCamel())
 	}
 	camelTableName := table.Name.ToCamel()
-	text, err := util.LoadTemplate(category, updateTemplateFile, template.Update)
+	text, err := pathx.LoadTemplate(category, updateTemplateFile, template.Update)
 	if err != nil {
 		return "", "", err
 	}
@@ -57,13 +58,14 @@ func genUpdate(table Table, withCache, postgreSql bool) (string, string, error) 
 			"originalPrimaryKey":    wrapWithRawString(table.PrimaryKey.Name.Source(), postgreSql),
 			"expressionValues":      strings.Join(expressionValues, ", "),
 			"postgreSql":            postgreSql,
+			"data":                  table,
 		})
 	if err != nil {
 		return "", "", nil
 	}
 
 	// update interface method
-	text, err = util.LoadTemplate(category, updateMethodTemplateFile, template.UpdateMethod)
+	text, err = pathx.LoadTemplate(category, updateMethodTemplateFile, template.UpdateMethod)
 	if err != nil {
 		return "", "", err
 	}
@@ -72,6 +74,7 @@ func genUpdate(table Table, withCache, postgreSql bool) (string, string, error) 
 		Parse(text).
 		Execute(map[string]interface{}{
 			"upperStartCamelObject": camelTableName,
+			"data":                  table,
 		})
 	if err != nil {
 		return "", "", nil
